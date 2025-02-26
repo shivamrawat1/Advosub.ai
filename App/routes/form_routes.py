@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from App.services.submission_service import save_submission
+from App.services.email_service import send_confirmation_email
 import json
 
 form_bp = Blueprint('form', __name__)
@@ -33,6 +34,10 @@ def index():
             print("Saving submission:", json.dumps(submission, indent=2))
             result = save_submission(submission)
             print("Save result:", result)
+            
+            # Send confirmation email to the subscriber
+            email_result = send_confirmation_email(submission['name'], submission['email'], submission['topics'], submission['frequency'])
+            print("Email result:", email_result)
             
             return render_template('mainpage.html', success=True)
         except Exception as e:
