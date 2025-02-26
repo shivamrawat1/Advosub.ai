@@ -1,4 +1,4 @@
-A web application for
+A web application for generating custom newsletters on latest news and research that matches your interest.
 
 ## Prerequisites
 
