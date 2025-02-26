@@ -33,13 +33,13 @@
         </div>
 
         <div class="form-group">
-            <label for="interests">Interests:</label>
+            <label for="interests">Interest:</label>
             <div class="interest-selection">
                 <input type="text" id="interest-input" placeholder="Type an interest...">
                 <div id="suggestions" class="suggestions-container"></div>
             </div>
-            <div id="selected-interests" class="selected-interests-container"></div>
-            <div id="hidden-inputs"></div>
+            <div id="selected-interest" class="selected-interest-container"></div>
+            <input type="hidden" id="selected-interest-input" name="topic" value="">
         </div>
         
         <div class="form-group">
@@ -70,30 +70,26 @@
             
             const interestInput = document.getElementById('interest-input');
             const suggestionsContainer = document.getElementById('suggestions');
-            const selectedInterestsContainer = document.getElementById('selected-interests');
-            const hiddenInputsContainer = document.getElementById('hidden-inputs');
+            const selectedInterestContainer = document.getElementById('selected-interest');
+            const selectedInterestInput = document.getElementById('selected-interest-input');
             
-            let selectedInterests = [];
+            let selectedInterest = '';
             
-            // Function to update hidden inputs for form submission
-            function updateHiddenInputs() {
-                hiddenInputsContainer.innerHTML = '';
-                selectedInterests.forEach((interest, index) => {
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'topics[]';
-                    hiddenInput.value = interest;
-                    hiddenInputsContainer.appendChild(hiddenInput);
-                });
+            // Function to update hidden input for form submission
+            function updateHiddenInput() {
+                selectedInterestInput.value = selectedInterest;
                 
-                // For debugging - log the hidden inputs
-                console.log("Hidden inputs updated:", selectedInterests);
+                // For debugging - log the hidden input
+                console.log("Hidden input updated:", selectedInterest);
             }
             
-            // Function to add an interest to the selected list
-            function addInterest(interest) {
-                if (interest && !selectedInterests.includes(interest)) {
-                    selectedInterests.push(interest);
+            // Function to set the selected interest
+            function setInterest(interest) {
+                if (interest) {
+                    selectedInterest = interest;
+                    
+                    // Clear previous selection
+                    selectedInterestContainer.innerHTML = '';
                     
                     const interestTag = document.createElement('div');
                     interestTag.className = 'interest-tag';
@@ -108,16 +104,16 @@
                     removeButton.setAttribute('aria-label', 'Remove ' + interest);
                     
                     removeButton.addEventListener('click', function() {
-                        selectedInterestsContainer.removeChild(interestTag);
-                        selectedInterests = selectedInterests.filter(item => item !== interest);
-                        updateHiddenInputs();
+                        selectedInterestContainer.innerHTML = '';
+                        selectedInterest = '';
+                        updateHiddenInput();
                     });
                     
                     interestTag.appendChild(interestText);
                     interestTag.appendChild(removeButton);
-                    selectedInterestsContainer.appendChild(interestTag);
+                    selectedInterestContainer.appendChild(interestTag);
                     
-                    updateHiddenInputs();
+                    updateHiddenInput();
                 }
                 
                 // Clear the input and suggestions
@@ -141,7 +137,7 @@
                         suggestion.textContent = interest;
                         
                         suggestion.addEventListener('click', function() {
-                            addInterest(interest);
+                            setInterest(interest);
                         });
                         
                         suggestionsContainer.appendChild(suggestion);
@@ -155,7 +151,7 @@
                     e.preventDefault();
                     const customInterest = this.value.trim();
                     if (customInterest) {
-                        addInterest(customInterest);
+                        setInterest(customInterest);
                     }
                 }
             });
@@ -194,7 +190,7 @@
             
             // Add form submission event listener for debugging
             document.querySelector('form').addEventListener('submit', function(e) {
-                console.log("Form submitted with interests:", selectedInterests);
+                console.log("Form submitted with interest:", selectedInterest);
                 // Don't prevent default - let the form submit normally
             });
         });

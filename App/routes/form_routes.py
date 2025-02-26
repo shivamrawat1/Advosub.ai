@@ -11,13 +11,9 @@ def index():
             # Debug: Print all form data
             print("Form data received:", request.form)
             
-            # Get all topics (interests) from the form
-            topics = request.form.getlist('topics[]')
-            print("Topics received:", topics)
-            
-            # Filter out any empty strings
-            topics = [topic for topic in topics if topic.strip()]
-            print("Filtered topics:", topics)
+            # Get the single topic (interest) from the form
+            topic = request.form.get('topic', '')
+            print("Topic received:", topic)
             
             # Validate required fields
             if not request.form.get('name') or not request.form.get('email') or not request.form.get('frequency'):
@@ -26,7 +22,7 @@ def index():
             submission = {
                 'name': request.form.get('name'),
                 'email': request.form.get('email'),
-                'topics': topics,
+                'topic': topic.strip(),
                 'frequency': request.form.get('frequency')
             }
             
