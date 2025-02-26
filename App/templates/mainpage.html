@@ -5,13 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advosub.ai</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        /* Loading overlay styles */
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        
+        /* Alert styles */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            width: 90%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
 </head>
 <body>
     <h1>Advosub Newsletter</h1>
     
     {% if success %}
     <div class="alert success">
-        <p>Thank you for your submission! Your information has been saved.</p>
+        <p>Thank you for your submission! Your newsletter has been sent to your email.</p>
     </div>
     {% endif %}
     
@@ -21,7 +79,17 @@
     </div>
     {% endif %}
     
-    <form method="POST">
+    <!-- Loading overlay -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Generating your personalized newsletter...</div>
+        <div class="loading-step" id="step1">Saving your information</div>
+        <div class="loading-step" id="step2">Searching for latest news</div>
+        <div class="loading-step" id="step3">Creating your newsletter</div>
+        <div class="loading-step" id="step4">Sending to your email</div>
+    </div>
+    
+    <form method="POST" id="newsletter-form">
         <div class="form-group">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
@@ -66,12 +134,17 @@
                 "Waste Management",
                 "Water Resources",
                 "Sustainable Agriculture",
+                "Animal Rights Advocacy",
+                "Ocean Conservation",
+                "Biodiversity Protection"
             ];
             
             const interestInput = document.getElementById('interest-input');
             const suggestionsContainer = document.getElementById('suggestions');
             const selectedInterestContainer = document.getElementById('selected-interest');
             const selectedInterestInput = document.getElementById('selected-interest-input');
+            const form = document.getElementById('newsletter-form');
+            const loadingOverlay = document.getElementById('loading-overlay');
             
             let selectedInterest = '';
             
@@ -163,35 +236,18 @@
                 }
             });
             
-            // Add alert styling
-            const style = document.createElement('style');
-            style.textContent = `
-                .alert {
-                    padding: 15px;
-                    margin-bottom: 20px;
-                    border-radius: 4px;
-                    width: 90%;
-                    max-width: 600px;
-                    margin-left: auto;
-                    margin-right: auto;
+            // Form submission event listener
+            form.addEventListener('submit', function(e) {
+                // Check if an interest is selected
+                if (!selectedInterest) {
+                    e.preventDefault();
+                    alert("Please select or enter an interest");
+                    return;
                 }
-                .success {
-                    background-color: #d4edda;
-                    color: #155724;
-                    border: 1px solid #c3e6cb;
-                }
-                .error {
-                    background-color: #f8d7da;
-                    color: #721c24;
-                    border: 1px solid #f5c6cb;
-                }
-            `;
-            document.head.appendChild(style);
-            
-            // Add form submission event listener for debugging
-            document.querySelector('form').addEventListener('submit', function(e) {
+                
+                // Show loading overlay
+                loadingOverlay.style.display = "flex";
                 console.log("Form submitted with interest:", selectedInterest);
-                // Don't prevent default - let the form submit normally
             });
         });
     </script>

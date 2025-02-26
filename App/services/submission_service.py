@@ -28,9 +28,9 @@ def save_submission(data):
             print(f"Submissions is not a list, it's a {type(submissions)}")
             submissions = []
         
-        # Ensure we're storing a single topic instead of an array of topics
-        if 'topics[]' in data:
-            data['topic'] = data.pop('topics[]')[0] if isinstance(data['topics[]'], list) else data.pop('topics[]')
+        # Ensure we're storing a single topic
+        if isinstance(data.get('topic'), list):
+            data['topic'] = data['topic'][0] if data['topic'] else ""
         
         submissions.append(data)
         print(f"Added new submission, now have {len(submissions)} submissions")

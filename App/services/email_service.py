@@ -2,6 +2,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+import markdown
 
 def send_confirmation_email(name, email, topics, frequency):
     """
@@ -55,6 +56,72 @@ def send_confirmation_email(name, email, topics, frequency):
             server.send_message(message)
         
         print(f"Confirmation email sent to {email}")
+        return True
+        
+    except Exception as e:
+        print(f"Error sending email: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return False 
+
+def send_newsletter_email(name, email, topic, frequency, newsletter_content):
+    """
+    Send a newsletter email to the subscriber
+    
+    Args:
+        name (str): Recipient's name
+        email (str): Recipient's email address
+        topic (str): Newsletter topic
+        frequency (str): Newsletter frequency
+        newsletter_content (str): Markdown content of the newsletter
+        
+    Returns:
+        bool: True if email sent successfully, False otherwise
+    """
+    try:
+        # Email configuration
+        sender_email = os.environ.get('EMAIL_USER', 'your-email@gmail.com')  # Set this in environment variables
+        sender_password = os.environ.get('EMAIL_PASSWORD', 'your-app-password')  # Set this in environment variables
+        
+        # Create message
+        message = MIMEMultipart()
+        message['From'] = sender_email
+        message['To'] = email
+        message['Subject'] = f"Your {frequency.capitalize()} Newsletter on {topic}"
+        
+        # Convert markdown to HTML
+        html_content = markdown.markdown(newsletter_content)
+        
+        # Email body
+        body = f"""
+        <html>
+        <body>
+            <h2>Hello {name}!</h2>
+            <p>Here's your {frequency} newsletter on {topic}:</p>
+            
+            <div style="margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+                {html_content}
+            </div>
+            
+            <p>You're receiving this because you subscribed to our {frequency} newsletter on {topic}.</p>
+            
+            <p>If you have any questions or need to update your preferences, please reply to this email.</p>
+            
+            <p>Best regards,<br>
+            The Advosub Team</p>
+        </body>
+        </html>
+        """
+        
+        # Attach HTML content
+        message.attach(MIMEText(body, 'html'))
+        
+        # Connect to Gmail SMTP server
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(sender_email, sender_password)
+            server.send_message(message)
+        
+        print(f"Newsletter email sent to {email}")
         return True
         
     except Exception as e:
