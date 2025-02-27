@@ -10,8 +10,17 @@ def send_confirmation_email(name, email, topics, frequency):
     """
     try:
         # Email configuration
-        sender_email = os.environ.get('EMAIL_USER', 'your-email@gmail.com')  # Set this in environment variables
-        sender_password = os.environ.get('EMAIL_PASSWORD', 'your-app-password')  # Set this in environment variables
+        sender_email = os.getenv('EMAIL_USER')
+        if not sender_email:
+            print("WARNING: EMAIL_USER not found in environment variables")
+            sender_email = 'your-email@gmail.com'
+
+        sender_password = os.getenv('EMAIL_PASSWORD')
+        if not sender_password:
+            print("WARNING: EMAIL_PASSWORD not found in environment variables")
+            sender_password = 'your-app-password'
+        print(f"Using email: {sender_email}")
+        print(f"Password length: {len(sender_password)}")
         
         # Create message
         message = MIMEMultipart()
@@ -79,9 +88,23 @@ def send_newsletter_email(name, email, topic, frequency, newsletter_content):
         bool: True if email sent successfully, False otherwise
     """
     try:
+        # Debug environment variables
+        print("Environment variables:")
+        print(f"EMAIL_USER in env: {'EMAIL_USER' in os.environ}")
+        print(f"EMAIL_PASSWORD in env: {'EMAIL_PASSWORD' in os.environ}")
+        
         # Email configuration
-        sender_email = os.environ.get('EMAIL_USER', 'your-email@gmail.com')  # Set this in environment variables
-        sender_password = os.environ.get('EMAIL_PASSWORD', 'your-app-password')  # Set this in environment variables
+        sender_email = os.getenv('EMAIL_USER')
+        if not sender_email:
+            print("WARNING: EMAIL_USER not found in environment variables")
+            sender_email = 'your-email@gmail.com'
+
+        sender_password = os.getenv('EMAIL_PASSWORD')
+        if not sender_password:
+            print("WARNING: EMAIL_PASSWORD not found in environment variables")
+            sender_password = 'your-app-password'
+        print(f"Using email: {sender_email}")
+        print(f"Password length: {len(sender_password)}")
         
         # Create message
         message = MIMEMultipart()
